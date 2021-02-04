@@ -104,3 +104,37 @@ extension EmojiTableViewController {
         return action
     }
 }
+
+extension EmojiTableViewController {
+    
+    @IBAction func unwindSegue(segue: UIStoryboardSegue){
+        guard segue.identifier == "saveSegue" else { return }
+        guard let sourceVC = segue.source as? NewEmojiTableViewController else { return }
+        
+        if let selectedIndexPath = tableView.indexPathForSelectedRow {
+            objects[selectedIndexPath.row] = sourceVC.emoji
+//            tableView.reloadData()
+            tableView.reloadRows(at: [selectedIndexPath], with: .fade)
+        }
+        else {
+            let newIndexPath = IndexPath(row: objects.count, section: 0)
+            objects.append(sourceVC.emoji)
+            tableView.insertRows(at: [newIndexPath], with: .fade)
+        }
+//        objects.append(sourceVC.emoji)
+//        tableView.reloadData()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == "editSegue" else { return }
+        guard let navigationVC = segue.destination as? UINavigationController else { return }
+        guard let destinationVC = navigationVC.topViewController as? NewEmojiTableViewController else { return }
+        
+        let indexPath = tableView.indexPathForSelectedRow!
+        let emoji = objects[indexPath.row]
+        
+        destinationVC.emoji = emoji
+        destinationVC.title = "Edit"
+        
+    }
+}
